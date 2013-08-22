@@ -1,0 +1,7 @@
+
+a.subgroup_edit {
+	color: green;
+}
+a.subgroup_edit.closed {
+	color: red;
+}

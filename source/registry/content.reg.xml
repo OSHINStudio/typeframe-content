@@ -1,0 +1,26 @@
+<registry>
+	<application name="Content" base="/content" admin="/admin/content" map="soft">
+		<tag name="pm:insert" class="Pagemill_Tag_Insert" />
+		<tag name="pm:group" class="Pagemill_Tag_Group" />
+		<tag name="pm:member" class="Pagemill_Tag_Ignore" />
+		<class name="Content" script="content.class.php" />
+		<class name="Content_Page" script="content.class.php" />
+		<class name="Content_Plug" script="content.class.php" />
+		<class name="Content_Page_Revision" script="content.class.php" />
+		<class name="Content_Plug_Revision" script="content.class.php" />
+		<plugin name="Content" class="Plugin_Content" />
+		<class name="Insertable" script="insertable.class.php" />
+		<config name="Content">
+			<item name="CONTENT_DEFAULT_TEMPLATE" caption="Default Template" type="text" default="generic.html" />
+			<item name="CONTENT_USE_PAGE_STYLE" caption="Use the page's CSS to style WYSIWYG editors" type="boolean" default="1" />
+		</config>
+		<!--<style path="*" stylesheet="/admin/content/widget.css" />-->
+		<style path="/admin/content/*" stylesheet="/admin/content/style.css" />
+		<extend path="/content" preg="/^\/[a-z0-9\-_]*\/?$/i" />
+	</application>
+
+	<application name="Content" title="Content" icon="ico-content.png" base="/admin/content" category="CMS" map="hard">
+
+		<trigger path="/admin/pages/settings" script="/admin/content/settings.php" when="after" />
+	</application>
+</registry>

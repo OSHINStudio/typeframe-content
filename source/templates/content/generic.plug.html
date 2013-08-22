@@ -1,0 +1,12 @@
+<pm:template xmlns="http://www.w3.org/1999/xhtml" xmlns:pm="http://typeframe.com/pagemill">
+	<pm:insert name="plugin_header" label="Header" type="text">
+		<pm:if expr="plugin_header">
+			<h2>
+				@{plugin_header}@
+			</h2>
+		</pm:if>
+	</pm:insert>
+	<pm:insert name="plugin_content" label="Content" type="html">
+		<pm:codeblock elements="*" attributes="*">@{plugin_content}@</pm:codeblock>
+	</pm:insert>
+</pm:template>

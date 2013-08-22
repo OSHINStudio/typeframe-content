@@ -1,0 +1,43 @@
+<pm:html xmlns:pm="http://typeframe.com/pagemill" pm:tmplname="Generic Content with Sections">
+	<pm:head>
+		<pm:insert name="page_title" label="Title" type="text"><pm:if expr="page_title"><title>@{page_title}@</title></pm:if></pm:insert>
+		<pm:insert name="metadescription" label="Meta Description" type="text"><pm:if expr="metadescription"><meta name="description" content="@{metadescription}@" /></pm:if></pm:insert>
+		<pm:insert name="metakeywords" label="Meta Keywords" type="text"><pm:if expr="metakeywords"><meta name="keywords" content="@{metakeywords}@" /></pm:if></pm:insert>
+        <pm:group name="sections" label="Sections">
+            <pm:member name="section_header" label="Header" type="text" />
+            <pm:member name="section_image" label="Image" type="image" />
+            <pm:member name="section_content" label="Content Area" type="html" />
+			
+        </pm:group>
+	</pm:head>
+	<pm:body>
+		<div style="background-image: url('@{resize_image(typef_web_dir . '/files/public/content/1024x768.jpg', 200, 200, true)}@'); width: 200px; height: 200px;"></div>
+		<pm:include template="/facebook/javascript.inc.html" />
+		<pm:if expr="loggedin">
+			Yeah, yer logged in.
+		</pm:if>
+		<pm:else>
+			Nope, not logged in.
+		</pm:else>
+        <pm:insert name="page_header" label="Header" type="text">
+            <pm:if expr="page_header">
+                <h2>
+                    @{page_header}@
+                </h2>
+            </pm:if>
+        </pm:insert>
+        <section>
+            <pm:loop name="sections">
+				<div class="_insert_group_container" rel="@{groupid}@">
+					<pm:if expr="section_header">
+						<h2>@{section_header}@</h2>
+					</pm:if>
+					<pm:if expr="section_image">
+						<pm:timg src="@{typef_web_dir}@/files/public/content/@{section_image}@" width="200" height="200" ratio="ratio" />
+					</pm:if>
+					<pm:codeblock>@{section_content}@</pm:codeblock>	
+				</div>
+            </pm:loop>
+        </section>
+	</pm:body>
+</pm:html>

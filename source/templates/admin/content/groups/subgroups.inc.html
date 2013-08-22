@@ -1,0 +1,25 @@
+@{toprowbase = rowbase}@
+<section>
+<pm:loop name="group->subgroups" as="group">
+	<div class="content_group" id="group_@{group->name}@">
+		@{groupbase = rowbase}@
+		<div class="content_group_header">
+			<em>@{group->label}@</em> <a class="group_add" href="@{group_url}@&amp;base=@{rowbase}@[@{group->name}@][]&amp;template=@{template}@"><i class="iconic-o-plus" title="New"> </i></a>
+		</div>
+		<ul class="content_rows">
+			<pm:loop name="row->@{group->name}@" as="row">
+				<li class="content_row">
+					<span class="handle"><i class="icon-th-list" title="Move"> </i></span>
+					@{rowbase = groupbase . '[' . group->name . '][' . (key ? key : loop_index) . ']'}@
+					<pm:include template="/admin/content/groups/rowdata.inc.html" />
+					<pm:include template="/admin/content/groups/rowlinks.inc.html" />
+					<pm:if expr="count(group->subgroups)">
+						<pm:recurse head="section" />
+					</pm:if>
+				</li>
+			</pm:loop>
+		</ul>
+	</div>
+</pm:loop>
+</section>
+@{rowbase = toprowbase}@

@@ -1,0 +1,34 @@
+<pm:choose>
+	<pm:when expr="type == 'html'">
+		<div class="span11">
+		<pm:editor name="@{name}@" stylesheets="@{json_encode(stylesheets)}@" editselector="@{selector}@">@{value}@</pm:editor>
+		</div>
+	</pm:when>
+	<pm:when expr="type == 'textarea'">
+		<textarea name="@{name}@" cols="40" class="span11" rows="10">@{value}@</textarea>
+	</pm:when>
+	<pm:when expr="type == 'image'">
+		<pm:imageupload name="@{name}@" value="@{value}@" dir="@{typef_web_dir}@/files/public/content"/>
+	</pm:when>
+	<pm:when expr="type == 'driver'">
+		<pm:select name="@{name}@" selected="@{value}@" class="span10">
+			<pm:loop name="driverables">
+				<option value="@{pageid}@">@{nickname}@</option>
+			</pm:loop>
+		</pm:select>
+	</pm:when>
+	<pm:when expr="type == 'checkbox'">
+		<pm:checkbox name="@{name}@" value="1" checked="@{value}@" />
+	</pm:when>
+	<pm:when expr="type == 'select'">
+		<pm:select name="@{name}@" selected="@{value}@" class="span10">
+			<option pm:loop="options option" value="@{option->value}@">@{option->label}@</option>
+		</pm:select>
+	</pm:when>
+	<pm:when expr="type == 'date'">
+		<pm:calendar name="@{name}@" value="@{value}@" />
+	</pm:when>
+	<pm:otherwise>
+		<input type="text" name="@{name}@" value="@{value}@" class="span11" />
+	</pm:otherwise>
+</pm:choose>

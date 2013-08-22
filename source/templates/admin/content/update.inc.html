@@ -1,0 +1,255 @@
+<pm:html xmlns="http://www.w3.org/1999/xhtml" xmlns:pm="http://typeframe.com/pagemill">
+	<pm:head>
+		<title>Admin - Content</title>
+		<pm:scriptonce src="~fs/jquery/jquery.js"></pm:scriptonce>
+		<pm:scriptonce type="text/javascript" src="~fs/jquery/jquery-ui.js" />
+		<pm:scriptonce src="~fs/jquery/jquery.checkunsaved.js" />
+		<pm:scriptonce src="~fs/js/cookie.js" />
+		<link rel="stylesheet" type="text/css" href="~s/styles/jquery/jquery.tabulate.css" />
+		<link rel="stylesheet" type="text/css" href="~s/styles/admin/content/style.css" />
+		<script><![CDATA[
+			window.buffer = new function() {
+				var _buffer = {};
+				this.write = function(key, data) {
+					_buffer[key] = data;
+				}
+				this.read = function(key) {
+					return _buffer[key];
+				}
+			}
+			// TODO: This function might not be necessary anymore. It appears
+			// that the controller is capable of handling arrays with numeric
+			// indexes that are out of order.
+			/*var resortRows = function(rows) {
+				var old = $(rows).html();
+				var reg = /([\w\W]*)\[[0-9]*?\]/;
+				var tr = $(rows).find('.content_row textarea').first();
+				var changes = false;
+				if (tr.attr('name')) {
+					var base = tr.attr('name').match(reg)[1];
+					var index = 0;
+					$(rows).children('.content_row').each(function() {
+						var editLink = $(this).find('a.group_edit');
+						var newLink = editLink.attr('href').replace(/(\[[0-9]+\]&*)/, '[' + index + ']&');
+						editLink.attr('href', newLink);
+						$(this).find('textarea').each(function() {
+							var newName = base + $(this).attr('name').substr(base.length).replace(/(\[[0-9]+\]*)/, '[' + index + ']');
+							if ($(this).attr('name') != newName) {
+								$(this).attr('name', newName);
+								changes = true;
+							}
+						});
+						index++;
+					});
+					if (changes) {
+						// Trigger the change function on the field's inputs to
+						// enable the save button and activate confirmation
+						$('#pageform :input').change();
+					}
+				}
+			}*/
+			window.updateGroup = function(incoming) {
+				if (incoming) {
+					var row = window.buffer.read('row');
+					if (row) {
+						// Update existing row
+						incoming.find('*[name]').each(function(i) {
+							var my = row.find('*[name="' + $(this).attr('name') + '"]');
+							my.val($(this).val());
+						});
+						row.find('.group_data').first().html(incoming.find('.group_data').first().html());
+					} else {
+						// Create new row
+						window.buffer.read('group').children('.content_rows').append(incoming);
+						window.buffer.read('group').children('.content_rows').show();
+					}
+					// Trigger the change function on the field's inputs to
+					// enable the save button and activate confirmation
+					$('#pageform :input').change();
+				}
+				$('#dialog').modal('hide');
+			}
+			$(document).ready(function() {
+				$('#pageform').checkUnsaved(true, {
+					ignore: $('#page_stay')
+				});
+				$('#pageform :input').not('#page_stay').bind('change', function() {
+					$('#page_submit').attr('disabled', null);
+				});
+				$('#pageform input[type="text"]').bind('keydown', function() {
+					$('#page_submit').attr('disabled', null);
+				});
+				if (Cookie.get('stay') != 1) {
+					$('#page_stay').attr('checked', null);
+				}
+				$('#page_stay').change(function() {
+					if ($(this).is(':checked')) {
+						Cookie.set('stay', 1, 30);
+					} else {
+						Cookie.set('stay', 0, 30);
+					}
+				});
+				$('#pageform').submit(function() {
+					if ($('#page_stay').is(':checked')) {
+						$(this).append('<input type="hidden" name="post_redir" value="@{typef_request_uri}@" />');
+					}
+				});
+				$('.content_group .content_rows').sortable({
+					axis: "y",
+					handle: ".handle",
+					update: function() {
+						$('#pageform :input').change();
+					}
+				});
+			});
+			var setModalIframeHeight = function(hgt) {
+				hgt = hgt + 16;
+				if (hgt > 600) hgt = 600;
+				$('#dialog .modal-body').css({height: hgt + 'px'});
+			};
+		]]></script>
+	</pm:head>
+	<pm:body>
+		<h2>
+			Edit @{nickname}@
+		</h2>
+		<pm:if expr="count(revisions)">
+			<form action="@{typef_request_path}@" method="get">
+				<input type="hidden" name="pageid" value="@{pageid}@" pm:if="pageid" />
+				<input type="hidden" name="plugid" value="@{plugid}@" pm:if="plugid" />
+				Revision:
+				<pm:select name="revisionid" selected="@{revisionid}@" onchange="$(this).parent().submit();">
+					<option value="">Current</option>
+					<option pm:loop="revisions r" value="@{r->revisionid}@">@{r->datemodified}@</option>
+				</pm:select>
+			</form>
+		</pm:if>
+		<pm:if expr="count(inserts) || count(groups)">
+			<form id="pageform" action="@{typef_request_path}@" method="post" enctype="multipart/form-data" class="form-horizontal">
+				<input type="hidden" name="pageid" value="@{pageid}@" pm:if="pageid" />
+				<input type="hidden" name="plugid" value="@{plugid}@" pm:if="plugid" />
+				<input type="hidden" name="redirecttofront" value="@{redirecttofront}@"/>
+				<div id="content_panels">
+					<nav class="tabulate navbar">
+						<div class="navbar-inner">
+							<ul class="nav">
+							<pm:if expr="count(inserts)">
+								<li><a href="#content_inserts">Content</a></li>
+							</pm:if>
+							<pm:loop name="groups">
+								<li><a href="#group_@{name}@">@{label}@</a></li>
+							</pm:loop>
+							</ul>
+						</div>
+					</nav>
+					<pm:if expr="count(inserts)">
+						<div id="content_inserts">
+
+								<pm:loop name="inserts">
+									@{value = content[name]}@
+
+									<div class="control-group">
+
+											<label class="control-label">@{label}@</label>
+
+										
+										<div class="editarea controls">
+											<pm:include template="/admin/content/field.inc.html" />
+										</div>
+									</div>
+								</pm:loop>
+
+						</div>
+					</pm:if>
+					<pm:if expr="count(groups)">
+						<pm:loop name="groups" as="group">
+							<div class="content_group" id="group_@{group->name}@">
+								<div class="content_group_header">
+									<em>@{group->label}@</em> <a class="group_add" href="@{group_url}@&amp;base=@{group->name}@[]&amp;template=@{template}@"><i class="iconic-o-plus" title="New"> </i></a>
+								</div>
+								<ul class="content_rows">
+									<pm:loop name="content[group->name]" as="row">
+										@{row->loop_index = loop_index}@
+										@{rowbase = group->name . '[' . (key ? key : loop_index) . ']'}@
+										<li class="content_row">
+											<span class="handle"><i class="icon-th-list" title="Move"> </i></span>
+											<pm:include template="/admin/content/groups/rowdata.inc.html" />
+											<pm:include template="/admin/content/groups/rowlinks.inc.html" />
+											<pm:include template="/admin/content/groups/subgroups.inc.html" />
+										</li>
+									</pm:loop>
+								</ul>
+							</div>
+						</pm:loop>
+					</pm:if>
+				</div>
+				<div class="form-footer" style="text-align:center;">
+					<pm:if expr="pageid">
+						<input id="page_preview" type="submit" name="cmd" class="btn" value="Preview" />
+					</pm:if>
+					<input id="page_submit" type="submit" name="btn" class="btn btn-primary" value="Save" />
+					<label id="page_stay_label" class="checkbox" style="display: inline-block; vertical-align:middle;margin-left: 20px;">
+						<input id="page_stay" type="checkbox" name="stay" value="1" checked="checked" /> Stay on page after saving
+					</label>
+				</div>
+			</form>
+		</pm:if>
+		<pm:else>
+			<p class="error">
+				This @{pageid ? 'page' : 'plugin'}@ does not have any manageable content.
+			</p>
+		</pm:else>
+		<script>
+			$(document).on('click', '.group_edit', function(evt) {
+				evt.preventDefault();
+				var currentRow = $(this).closest('.content_row');
+				window.buffer.write('row', currentRow);
+				window.buffer.write('group', currentRow.closest('.content_group'));
+				var dialog = $('#dialog');
+				dialog.find('.modal-body').html('<iframe id="dialog_iframe" src="' + $(this).attr('href') + '"></iframe>');
+				dialog.modal();
+			});
+			$(document).on('click', '.group_add', function(evt) {
+				evt.preventDefault();
+				window.buffer.write('group', $(this).closest('.content_group'));
+				window.buffer.write('row', null);
+				var href = $(this).attr('href');
+				var trs = $(this).closest('.content_group').children('.content_rows').children('.content_row');
+				href = href.replace('[]', '[' + trs.length + ']');
+				var dialog = $('#dialog');
+				dialog.find('.modal-body').html('<iframe id="dialog_iframe" src="' + href + '"></iframe>');
+				dialog.modal();
+			});
+			$(document).on('click', '.group_delete', function(evt) {
+				evt.preventDefault();
+				var tbl = $(this).closest('.content_rows');
+				$(this).closest('.content_row').remove();
+				//resortRows(tbl, null);
+				$('#pageform :input').change();
+			});
+		</script>
+		<pm:include template="/admin/content/dialog.inc.html" />
+		<script type="text/javascript">
+			$(function() {
+				$('#content_panels nav.tabulate a').each(function() {
+					$($(this).attr('href')).hide();
+				});
+				$('#content_panels nav.tabulate li').first().addClass('active');
+				$($('#content_panels nav.tabulate a').first().attr('href')).show();
+				$('#content_panels nav.tabulate a').click(function(evt) {
+					evt.preventDefault();
+					$('#content_panels nav.tabulate li').removeClass('active');
+					$(this).parent('li').addClass('active');
+					$('#content_panels nav.tabulate a').each(function() {
+						$($(this).attr('href')).hide();
+					});
+					$($(this).attr('href')).show();
+				});
+			});
+			$('#page_preview').click(function() {
+				$('#pageform').attr('target', '_blank');
+				setTimeout("$('#pageform').attr('target', null);", 500);
+			});
+		</script>
+	</pm:body>
+</pm:html>

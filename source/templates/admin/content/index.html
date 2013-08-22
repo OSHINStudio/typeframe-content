@@ -1,0 +1,42 @@
+<pm:html>
+	<pm:head>
+		<title>Admin - Content</title>
+		@{page_title = 'Content'}@
+	</pm:head>
+	<pm:body>
+		
+		<pm:if expr="count(pages)">
+			<div class="span7">
+			<h2>Content</h2>
+			<p class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>The following pages have editable content:</p>
+			<table class="table table-bordered">
+				<tr><th>Page</th><th></th></tr>
+				<pm:loop name="pages" cycle="odd,even">
+					<tr class="@{cycle}@">
+						<td>@{(nickname ? nickname : uri)}@ <pm:if expr="dead_template"><span class="label label-important">(@{'Unable to find template ' . dead_template . '!'}@)</span></pm:if></td>
+						<td style="text-align:right;"><a href="~a/page?pageid=@{pageid}@" class="btn btn-warning btn-mini"><i class="iconic-pen-alt2"></i> Edit Content</a></td>
+					</tr>
+				</pm:loop>
+			</table>
+			</div>
+		</pm:if>
+
+		<pm:if expr="count(plugins)">
+		<div class="span5">
+			<h2>&nbsp;</h2>
+			<p class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>The following plugins have editable content:</p>
+			<table class="table table-bordered">
+				<tr><th>Plugin</th><th></th></tr>
+				 <pm:loop name="plugins" cycle="odd,even">
+					<tr class="@{cycle}@">
+						<td>@{name ? name : '(unnamed, #' . plugid . ')'}@</td>
+						<td style="text-align:right;"><a href="~a/plug?plugid=@{plugid}@" class="btn btn-warning btn-mini"><i class="iconix-pen-alt2"></i> Edit Content</a></td>
+					</tr>
+				 </pm:loop>
+			</table>
+					</div>
+		</pm:if>
+
+		<p pm:if="!count(pages) AND !count(plugins)">No content pages or plugins are defined.</p>
+	</pm:body>
+</pm:html>

@@ -1,0 +1,22 @@
+<pm:if expr="insertabletemplates">
+	<p class="alert alert-info">
+		You can create or modify templates with insertable content in the templates/content
+		directory.
+	</p>
+	<div class="control-group">
+		<label class="control-label">Selected template</label>
+		<div class="controls">
+			<pm:select name="settings[template]" selected="@{settings->template}@" id="templateselect">
+				<option pm:if="!settings->template" value="">(Select a template)</option>
+				<option pm:loop="insertabletemplates" value="@{template}@">@{label}@</option>
+			</pm:select>
+		</div>
+	</div>
+	
+</pm:if>
+<pm:else>
+	<p clas="alert">
+		There are no content templates available.  You need to create a template
+		and put it in the templates/content directory.
+	</p>
+</pm:else>

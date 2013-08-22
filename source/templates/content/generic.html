@@ -1,0 +1,25 @@
+<pm:html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:pm="http://typeframe.com/pagemill"
+>
+	<pm:head>
+		<pm:insert name="page_title" label="Title" type="text"><pm:if expr="page_title"><title>@{page_title}@</title></pm:if></pm:insert>
+		<pm:insert name="metadescription" label="Meta Description" type="text"><pm:if expr="metadescription"><meta name="description" content="@{metadescription}@" /></pm:if></pm:insert>
+		<pm:insert name="metakeywords" label="Meta Keywords" type="text"><pm:if expr="metakeywords"><meta name="keywords" content="@{metakeywords}@" /></pm:if></pm:insert>
+	</pm:head>
+	<pm:body>
+	
+
+							
+		<pm:insert name="page_header" label="Header" type="text">
+			<pm:if expr="page_header">
+				<h1>
+					@{page_header}@
+				</h1>
+			</pm:if>
+		</pm:insert>
+		<div id="page_content_container">
+			<pm:insert name="page_content" label="Content" type="html" />
+		</div>
+	</pm:body>
+</pm:html>

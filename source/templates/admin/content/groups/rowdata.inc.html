@@ -1,0 +1,6 @@
+<span class="group_data">
+	<strong>@{row[group->members[0]->name]}@</strong>
+	<pm:loop name="group->members" as="member">
+		<pm:include template="/admin/content/groups/row-members.inc.html" />
+	</pm:loop>
+</span>

@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<pm:scriptonce src="~fs/jquery/jquery.js" />
+		<script>
+			$(function()
+			{
+			<pm:if expr="row">
+					var tr = $('.content_row').first();
+					window.parent.updateGroup(tr);
+			</pm:if>
+			<pm:else>
+				window.parent.updateGroup(null);
+			</pm:else>
+			});
+		</script>
+	</head>
+	<body>
+		<ol class="content_rows">
+			@{rowbase = base}@
+			<li class="content_row">
+				<span class="handle"><i class="icon-th-list" title="Move"> </i></span>
+				<pm:include template="/admin/content/groups/rowdata.inc.html" />
+				<pm:include template="/admin/content/groups/rowlinks.inc.html" />
+				<pm:include template="/admin/content/groups/subgroups.inc.html" />
+			</li>
+		</ol>
+	</body>
+</html>

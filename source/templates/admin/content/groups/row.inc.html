@@ -1,0 +1,54 @@
+<tr>
+	<td class="draggable">
+		<h1>A DAMN ROW: @{group->members[0]->name}@ is @{row[group->members[0]->name]}@</h1>
+		<span class="group_first_value">
+			<pm:if expr="group->members[0]->type == 'image'">
+				<pm:timg src="@{typef_web_dir}@/files/public/content/@{row[group->members[0]->name]}@" width="20" height="20" ratio="ratio" />
+			</pm:if>
+			<pm:else>
+				@{row[group->members[0]->name]}@
+			</pm:else>
+		</span>
+	</td>
+	<td style="text-align:right;">
+		<a class="group_edit btn btn-warning btn-mini" href="@{typef_web_dir}@/admin/content/groups/form?pageid=@{pageid}@&amp;base=@{row->base}@&amp;template=@{template}@"><i class="icon-pen-alt2"></i> Edit</a>&nbsp;<a class="group_delete btn btn-danger btn-mini" href="#"><i class="iconic-x"></i> Delete Row</a><br/>
+		<span class="group_data">
+			<pm:loop name="group->members" as="member">
+				<pm:include template="/admin/content/groups/row-members.inc.html" />
+			</pm:loop>
+		</span>
+		@{parent = group}@
+		<pm:loop name="group->subgroups" as="subgroup" delimiter=" &amp;bull; ">
+			@{subgroup->base = row->base . '[' . subgroup->name . ']'}@
+			<small><a class="subgroup_edit" rel="groupname_@{subgroup->name}@" href="@{typef_web_dir}@/admin/content/groups/form?pageid=@{pageid}@&amp;base=@{subgroup->base}@&amp;template=@{template}@">@{subgroup->label}@</a></small>
+		</pm:loop>
+		<div class="subgroup_data" pm:loop="group->subgroups group">
+			@{group->base = row->base . '[' . group->name . ']'}@
+			<a class="group_add" href="@{typef_app_dir}@/groups/form?pageid=@{pageid}@&amp;base=@{group->base}@[]&amp;template=@{template}@">Add New Row to @{group->label}@</a>
+			<!--<a class="subgroup_close" href="#">Close @{group->label}@</a>-->
+			<table class="subtable groupname_@{group->name}@">
+				<thead>
+					<tr class="nodrag nodrop">
+						<th>
+							@{group->members[0]->label}@
+						</th>
+						<th>
+							&nbsp;
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{nextrow = row[group->name]}@
+					<pm:loop name="nextrow" as="row">
+						@{row->base = group->base . '[' . (key ? key : loop_index) . ']'}@
+						<pm:include template="/admin/content/groups/row.inc.html" />
+						<!--<pm:loop name="group->members" as="member">
+							<pm:include template="/admin/content/groups/row-members.inc.html" />
+						</pm:loop>-->
+					</pm:loop>
+				</tbody>
+			</table>
+		</div>
+		@{group = parent}@
+	</td>
+</tr>

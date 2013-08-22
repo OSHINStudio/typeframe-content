@@ -1,0 +1,32 @@
+<pm:template xmlns="http://www.w3.org/1999/xhtml" xmlns:pm="http://typeframe.com/pagemill">
+	<pm:head>
+		<pm:group name="sections" label="Sections">
+			<pm:member name="section_header" label="Header" type="text" />
+			<pm:member name="section_image" label="Image" type="image" />
+			<pm:member name="section_content" label="Content" type="html" />
+		</pm:group>
+	</pm:head>
+	<pm:body>
+		<pm:include template="/facebook/javascript.inc.html" />
+		<pm:insert name="page_header" label="Header" type="text">
+			<pm:if expr="page_header">
+				<h2>
+					@{page_header}@
+				</h2>
+			</pm:if>
+		</pm:insert>
+		<section>
+			<pm:loop name="sections">
+				<div class="_insert_group_container" rel="@{groupid}@">
+					<pm:if expr="section_header">
+						<h2>@{section_header}@</h2>
+					</pm:if>
+					<pm:if expr="section_image">
+						<pm:timg src="@{typef_web_dir}@/files/public/content/@{section_image}@" width="200" height="200" ratio="ratio" />
+					</pm:if>
+					<pm:codeblock>@{section_content}@</pm:codeblock>
+				</div>
+			</pm:loop>
+		</section>
+	</pm:body>
+</pm:template>

@@ -1,0 +1,68 @@
+<html>
+	<head>
+		<title>Group Form</title>
+		<style type="text/css">
+			html {
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<pm:scriptonce src="~fs/jquery/jquery.js"></pm:scriptonce>
+		<script><![CDATA[
+			$(function()
+			{
+				var row = window.parent.buffer.read('row');
+				if (row)
+				{
+					$('#groupform input, #groupform textarea, #groupform select').each(function()
+					{
+						var orig = row.find('*[name="@{base}@[' + $(this).attr('name') + ']"]');
+						if ($(this).attr('type') == 'checkbox')
+						{
+							if (orig.val()) $(this).attr('checked', 'checked');
+						}
+						else if ($(this).attr('type') != 'file')
+						{
+							$(this).val(orig.val());
+						}
+						else
+						{
+							var url = '@{typef_app_dir}@/imageupload?name=' + encodeURIComponent($(this).attr('name')) + '&value=' + encodeURIComponent(orig.val());
+							$(this).closest('td').load(url);
+						}
+					});
+				}
+				setInterval("window.parent.setModalIframeHeight($('#container').outerHeight(true));", 100);
+			});
+			var submitForm = function() {
+				// An error occurs when we try to submit the form directly
+				// (e.g., $('form').submit()). It works correctly when we click
+				// a hidden submit button instead.
+				// This bug has something to do with CKEditors inside the form.
+				$('#group-form-element input[type=submit]').click();
+			}
+		]]></script>
+	</head>
+	<body>
+		<div id="container" style="width: auto; height: auto;">
+			<form action="@{action}@" id ="group-form-element" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="template" value="@{template}@" />
+				<input type="hidden" name="base" value="@{globals->request->base}@" />
+				<input type="hidden" name="action" value="Save" />
+				<input type="submit" style="display: none;" />
+				<table id="groupform" class="fieldset">
+					<tr pm:loop="group->members">
+						<td>@{label}@</td>
+						<td>
+							<pm:include template="/admin/content/field.inc.html" />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</body>
+</html>
